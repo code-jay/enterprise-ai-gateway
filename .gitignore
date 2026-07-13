@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environment
+venv/
+.venv/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Logs and runtime files
+logs/
+*.log
+
+# IDE and operating system
+.vscode/
+.idea/
+.DS_Store
