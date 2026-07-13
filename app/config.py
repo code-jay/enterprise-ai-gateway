@@ -1,9 +1,8 @@
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
 
 class Settings(BaseSettings):
 
@@ -32,6 +31,24 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
+    )
+
+    openai_api_key: SecretStr | None = Field(
+        default=None,
+        repr=False,
+    )
+
+    openai_default_model: str = "gpt-4o-mini"
+
+    openai_timeout_seconds: float = Field(
+        default=60.0,
+        gt=0,
+    )
+
+    openai_max_retries: int = Field(
+        default=2,
+        ge=0,
+        le=10,
     )
 
     @property

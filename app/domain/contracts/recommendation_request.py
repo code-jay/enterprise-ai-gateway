@@ -1,20 +1,74 @@
-from app.domain.contracts.base_request import BaseRequest
+"""Unified response returned by the Enterprise AI Gateway."""
 
-from app.domain.enums.task_type import TaskType
+from pydantic import Field, model_validator
 
-from app.domain.enums.privacy_level import PrivacyLevel
+from app.domain.contracts.base_response import BaseResponse
+from app.domain.enums.finish_reason import FinishReason
+from app.domain.enums.provider_type import ProviderType
 
-from app.domain.enums.response_speed import ResponseSpeed
 
+class GatewayResponse(BaseResponse):
+    """Provider-independent response returned to gateway clients."""
 
-class RecommendationRequest(BaseRequest):
+    provider: ProviderType
 
-    task: TaskType
+    model: str = Field(
+        ...,
+        min_length=1,
+    )
 
-    context_length: int
+    content: str
 
-    budget: str
+    finish_reason: FinishReason = FinishReason.STOP
 
-    privacy: PrivacyLevel
+    latency_ms: float = Field(
+        default=0.0,
+        ge=0.0,
+    )
 
-    response_speed: ResponseSpeed
+    input_tokens: int = Field(
+        default=0,
+        ge=0,
+    )
+
+    output_tokens: int = Field(
+        default=0,
+        ge=0,
+    )
+
+    total_tokens: int = Field(
+        default=0,
+        ge=0,
+    )
+
+    estimated_cost: float = Field(
+        default=0.0,
+        ge=0.0,
+    )
+
+    recommendation_score: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+
+    routing_reason: list[str] = Field(
+        default_factory=list,
+    )
+
+    request_id: str | None = None
+
+    raw_response_id: str | None = None
+
+    metadata: dict[str, object] = Field(
+        default_factory=dict,
+    )
+
+    @model_validator(mode="after")
+    def normalize_total_tokens(self) -> "GatewayResponse":
+        calculated_total = self.input_tokens + self.output_tokens
+
+        if self.total_tokens == 0:
+            self.total_tokens = calculated_total
+
+        return self
