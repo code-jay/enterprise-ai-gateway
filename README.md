@@ -267,7 +267,7 @@ Future
 ## Clone
 
 ```bash
-git clone https://github.com/<username>/enterprise-ai-gateway.git
+git clone https://github.com/code-jay/enterprise-ai-gateway.git
 
 cd enterprise-ai-gateway
 ```
